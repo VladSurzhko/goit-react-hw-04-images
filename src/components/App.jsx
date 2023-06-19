@@ -1,140 +1,241 @@
-import { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchBar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
-// import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
 import Button from './Button/Button';
 import Loader from './Loader/Loader';
 import Modal from './Modal/Modal';
 
+// const scroll = document.querySelector("body")
 
+const App = () => {
+  const [searchName, setSearchName] = useState('');
+  const [images, setImages] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (searchName) {
+      fetchImages(searchName, currentPage);
+    }
+  }, [searchName, currentPage]);
 
-
-export default class App extends Component {
-  state = {
-    searchName: '',
-    photos: [],
-    images: [],
-    currentPage: 1,
-    loading: false,
-    selectedImage: null,
-    modalOpen: false,
-
-    
-  };
-
-  handleFormSubmit = (searchName) => {
+  const handleFormSubmit = (searchName) => {
     if (searchName.trim() === '') {
-      alert('Please, write');
+      alert('Please write something.');
       return;
     }
 
-
-    this.setState({ searchName, images: [], currentPage: 1 });
-    
+    setSearchName(searchName);
+    setImages([]);
+    setCurrentPage(1);
   };
 
-  componentDidUpdate(prevProps, prevState) {
-  const {searchName, currentPage} = this.state  
-    
-
-    if (prevState.searchName !== searchName 
-      || prevState.currentPage !== currentPage) {
-
-      this.fetchImages(searchName, currentPage);
-      
-    }
-  }
-
-
-  
-  fetchImages = (searchName, page) => {
-    this.setState({loading: true})
+  const fetchImages = (searchName, page) => {
+    setLoading(true);
 
     fetch(
       `https://pixabay.com/api/?q=${searchName}&page=${page}&key=35867902-bd768db4cb6d1ffc0364d5f36&image_type=photo&orientation=horizontal&per_page=12`
     )
       .then((response) => response.json())
       .then((data) => {
-
         if (data.hits.length === 0) {
-          alert('Error! Cannot find');
+          alert('Error! Cannot find images.');
         }
 
         if (page === 1) {
-          this.setState({ images: data.hits });
+          setImages(data.hits);
         } else {
-          this.setState((prevState) => ({
-            images: [...prevState.images, ...data.hits],
-          }));
+          setImages((prevImages) => [...prevImages, ...data.hits]);
         }
-        this.setState({ currentPage: page });
       })
       .catch((error) => {
-        alert('Images not found' + error);
+        alert('Images not found: ' + error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
-  handleLoadMore = () => {
-    const { currentPage } = this.state;
+  const handleLoadMore = () => {
     const nextPage = currentPage + 1;
-    this.setState({currentPage: nextPage});
+    setCurrentPage(nextPage);
   };
 
-
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
-
-  handleKeyDown = (event) => {
-    if (event.keyCode === 27) {
-      this.closeModal();
-    }
+  const openModal = (images) => {
+    setSelectedImage(images);
+    setModalOpen(true);
+    // scroll.classList.add('stopScroll');
   };
 
-  openModal = (image) => {
-    this.setState({ modalOpen: true, selectedImage: image });
+  const closeModal = () => {
+    setSelectedImage(null);
+    setModalOpen(false);
+    // scroll.classList.remove('stopScroll');
   };
 
-  closeModal = () => {
-    this.setState({ modalOpen: false, selectedImage: null });
-  };
+  return (
+    <div>
+      <SearchBar onSubmit={handleFormSubmit} />
+      {images.length > 0 && (
+        <ImageGallery images={images} openModal={openModal} />
+      )}
+      {images.length > 0 && images.length % 12 === 0 && (
+        <Button onLoadMore={handleLoadMore} />
+      )}
 
-  render() {
-    const { images, loading, modalOpen, selectedImage } = this.state;
-    // const [isOpen, onClose] = this.state
+      <Loader loading={loading} />
 
-    return (
-      <div>
-        <SearchBar onSubmit={this.handleFormSubmit} />
-        {images.length > 0 && (
+      {modalOpen && (
+        <Modal active={modalOpen} setActive={closeModal}>
+          <img src={selectedImage.largeImageURL} alt={selectedImage.tags} />
+        </Modal>
+      )}
+    </div>
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
+
+// import { useState, useEffect } from 'react';
+// import SearchBar from './Searchbar/Searchbar';
+// import ImageGallery from './ImageGallery/ImageGallery';
+// import Button from './Button/Button';
+// import Loader from './Loader/Loader';
+// import Modal from './Modal/Modal';
+
+
+
+
+
+// const App = () => {
+//   const [searchName, setSearchName] = useState('');
+//   const [images, setImages] = useState([]);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [loading, setLoading] = useState(false);
+//   const [selectedImage, setSelectedImage] = useState(null);
+//   const [modalOpen, setModalOpen] = useState(false);  
+  
+//   useEffect(() =>{
+//     if(searchName){
+//       fetchImages(searchName,currentPage)
+//     }  
+//     },[searchName,currentPage]);
+
+// const  handleFormSubmit = (searchName) => {
+//     if (searchName.trim() === '') {
+//       alert('Please, write');
+//       return;
+//     }
+
+//     setSearchName(searchName);
+//     setImages([]);
+//     setCurrentPage(1)
+    
+//   };
+
+  
+
+  
+
+  
+//   const fetchImages = (searchName, page) => {
+//     setLoading({loading: true})
+
+//     fetch(
+//       `https://pixabay.com/api/?q=${searchName}&page=${page}&key=35867902-bd768db4cb6d1ffc0364d5f36&image_type=photo&orientation=horizontal&per_page=12`
+//     )
+//       .then((response) => response.json())
+//       .then((data) => {
+
+//         if (data.hits.length === 0) {
+//           alert('Error! Cannot find');
+//         }
+
+//         if (page === 1) {
+//           setImages(data.hits);
+//         } else {
+//           setImages((prevImages) => [...prevImages, ...data.hits])
+//       }})
+//       .catch((error) => {
+//         alert('Images not found' + error);
+//       });
+
+//       // .finally(() => {
+//       // setLoading(false)  
+//       // }
+//       // )
+  
+
+//   const handleLoadMore = () => {
+    
+//     const nextPage = currentPage + 1;
+//     setCurrentPage(nextPage);
+//   };
+
+// // useEffect(() => {
+// //   const handleKeyDown = (event) => {
+// //     if (event.keyCode === 27) {
+// //       closeModal();
+// //     }
+// //   }
+
+// //   window.addEventListener("keydown", handleKeyDown)
+
+// //   return() => {
+// //     window.removeEventListener("keydown", handleKeyDown)
+// //   }
+// // }, [])
+
+
+//   const openModal = () => {
+//     setSelectedImage(images);
+//     setModalOpen(true)
+//   };
+
+//   const closeModal = () => {
+//     setSelectedImage(null);
+//     modalOpen(false)
+//   };
+
+ 
+
+//     return (
+//       <div>
+//         <SearchBar onSubmit={handleFormSubmit} />
+//         {images.length > 0 && (
           
-            <ImageGallery images={images}  openModal={this.openModal}/>
+//             <ImageGallery images={images}  openModal={openModal}/>
           
-            )}
-            {images.length > 0 && images.length % 12 === 0 &&
-            (
+//             )}
+//             {images.length > 0 && images.length % 12 === 0 &&
+//             (
             
-            <Button onLoadMore={this.handleLoadMore} />
+//             <Button onLoadMore={handleLoadMore} />
         
-        )}
+//         )}
       
         
 
-        <Loader loading={loading}/>
+//         <Loader loading={loading}/>
 
-        {modalOpen && (
-          <Modal active={modalOpen} setActive={this.closeModal}>
-            <img src={selectedImage.largeImageURL} alt={selectedImage.tags} />
-          </Modal>
-        )}
+//         {modalOpen && (
+//           <Modal active={modalOpen} setActive={closeModal}>
+//             <img src={selectedImage.largeImageURL} alt={selectedImage.tags} />
+//           </Modal>
+//         )}
         
-        {/* <Loader searchName={searchName} /> */}
-      </div>
-    );
-  }
-}
+//         {/* <Loader searchName={searchName} /> */}
+//       </div>
+//     );
+//   }
+// }
+// export default App
