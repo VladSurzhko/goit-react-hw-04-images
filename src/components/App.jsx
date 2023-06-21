@@ -89,13 +89,13 @@ const App = () => {
     setModalOpen(false);
   }
 
-  // useEffect(() => {
-  //   if (modalOpen) {
-  //     document.documentElement.style.overflow = 'hidden';
-  //   } else {
-  //     document.documentElement.style.overflow = 'auto';
-  //   }
-  // }, [modalOpen]);
+  useEffect(() => {
+    if (modalOpen) {
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.documentElement.style.overflow = 'auto';
+    }
+  }, [modalOpen]);
 
   return (
     <div>
