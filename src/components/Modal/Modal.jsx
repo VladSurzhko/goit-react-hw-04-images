@@ -1,24 +1,26 @@
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { Overlay, Photo } from "./Modal.styled";
 
-const Modal = ({ active, setActive, children, closeModal }) => {
+const Modal = ({ active, setActive, children, closeModal}) => {
   const handleClick = (e) => {
     e.stopPropagation();
   };
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.keyCode === 27) {
-        closeModal();
-      }
-    };
+ 
+  // useEffect(() => {
+  //   const handleKeyDown = (event) => {
+  //     if (event.keyCode === 27) {
+  //       closeModal();
+  //     }
+  //   };
 
-    window.addEventListener("keydown", handleKeyDown);
+  //   window.addEventListener("keydown", handleKeyDown);
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [closeModal]);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, [closeModal]);
+
 
   return (
     <Overlay onClick={() => setActive(false)}>

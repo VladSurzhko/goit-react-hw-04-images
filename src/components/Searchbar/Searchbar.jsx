@@ -6,26 +6,7 @@ import { BtnLabel } from './Searchbar.styled';
 import { BtnInput } from './Searchbar.styled';
 import { ImSearch } from 'react-icons/im';
 
-// class SearchBar extends Component {
-//   state = {
-//     searchName: '',
-//   };
 
-//   handleChangeName = (event) => {
-//     this.setState({ searchName: event.currentTarget.value.toLowerCase() });
-//   };
-
-//   handleSubmit = (event) => {
-//       event.preventDefault();
-
-//       if (this.state.searchName.trim() === ''){
-//           alert("Please use text");
-//       return;
-//         }
-      
-//       this.props.onSubmit(this.state.searchName)
-//     this.setState({ searchName: '' });
-//   };
 const SearchBar = ({ onSubmit }) => {
   const [searchName, setSearchName] = useState("")
 

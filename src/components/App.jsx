@@ -63,6 +63,21 @@ const App = () => {
     setCurrentPage(nextPage);
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.keyCode === 27) {
+        closeModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+
   const openModal = (images) => {
     setSelectedImage(images);
     setModalOpen(true);
@@ -72,8 +87,15 @@ const App = () => {
   const closeModal = () => {
     setSelectedImage(null);
     setModalOpen(false);
-    // scroll.classList.remove('stopScroll');
-  };
+  }
+
+  // useEffect(() => {
+  //   if (modalOpen) {
+  //     document.documentElement.style.overflow = 'hidden';
+  //   } else {
+  //     document.documentElement.style.overflow = 'auto';
+  //   }
+  // }, [modalOpen]);
 
   return (
     <div>
